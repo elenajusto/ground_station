@@ -4,6 +4,7 @@ which is an Arduino based ground station designed to communicate with a cardboar
 act as a "satellite" via IR.
 
 <b> Project Description </b>
+
 A ground station designed to locate and communicate with a satellite, which is a cardboard box 
 with sensors and a transceiver. The system has a user input interface to send commands to the 
 satellite, an actuation subsystem that allows for rotation and directional tracking of the 
