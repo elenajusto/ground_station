@@ -14,7 +14,7 @@
 const int stepsPerRevolution = 500;                     // change this to fit the number of steps per revolution
 
 // initialize the stepper library on pins 8 through 11:
-Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
+Stepper myStepper(stepsPerRevolution, 8, 10, 9, 11);
 
 // ********** Servo Motor **********
 Servo servoArm;                                        // Servo object. Pin assignment  in setup() loop. Pin = 6
@@ -52,6 +52,7 @@ void loop() {
 
   myStepper.step(500);
   delay(500);
-
+  flexServoArm();
+  myStepper.step(-500);
 
 }
