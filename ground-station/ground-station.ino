@@ -19,8 +19,7 @@ Servo servoArm;                                               // Servo object. P
 
 // ************ Functions ********************
 
-// Horizontal Scan Function
-// Horizontal Scan Function
+// Horizontal Scan Function - Scans the whole sky, using vertical scan and checkSignal downstream.
 void horizontalScan() {
   
   Serial.println("Starting horizontal scan");                 // Debug statement
@@ -100,7 +99,7 @@ bool checkSignalDummy(){
   delay(50);
 
   // Randomly decide whether a ping receipt is received or not
-  int chanceOfSuccess = 95;                                     // Adjust chance of success as needed - Currenlty 0
+  int chanceOfSuccess = 95;                                     // Adjust chance of success as needed - Currenlty 5%
   if (random(0, 100) > chanceOfSuccess) {        
 
     // Simulate a successful ping receipt
@@ -142,15 +141,10 @@ void setup() {
 	towerStepper.setMaxSpeed(1000.0);
 	towerStepper.setAcceleration(50.0);
 	towerStepper.setSpeed(200);            
-	//towerStepper.moveTo(-500);                      // Sets position that stepper will move to (in steps) - 360 = 2038, 180 = 1019
+
+  horizontalScan();                              // Run a whole sky scan once
 };
 
-void loop() {
-  //verticalScan();              // Testing purposes
-  
-	//towerStepper.run();          // Testing purposes
-
-  horizontalScan();        
-  //towerStepper.run();
+void loop() {  
 
 };
