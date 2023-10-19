@@ -20,6 +20,7 @@ Servo servoArm;                                               // Servo object. P
 // ************ Functions ********************
 
 // Horizontal Scan Function
+// Horizontal Scan Function
 void horizontalScan() {
   
   Serial.println("Starting horizontal scan");                 // Debug statement
@@ -35,7 +36,10 @@ void horizontalScan() {
     }
 
     // Calls vertical scan
-    verticalScan();
+    if (verticalScan()) {
+      Serial.println("SIGNAL FOUND - EXITING SCAN");
+      break;                                                  // Exits horizontal scan if signal is detected from vertical scan
+    };
 
     Serial.print("Step: ");                                   // Debug statement
     Serial.print(step);                                       // Debug statement
@@ -46,19 +50,6 @@ void horizontalScan() {
 
   Serial.println("Completed horizontal scan");                 // Debug statement
 
- // for degree in horizontalDegrees 
-
-    // Position to degree
-
-    // Call vertical scan
-
-    // Check what vertical scan says
-
-      // If verticalScan found satellite - End state
-
-      // If verticalScan has not found satellite
-
-        //Continue to next degree
 };
 
 // Vertical Scan Function
