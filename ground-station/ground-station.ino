@@ -19,30 +19,44 @@ Servo servoArm;                                               // Servo object. P
 
 // ************ Functions ********************
 
-// State - Horizontal Scan
+// Horizontal Scan Function
 void horizontalScan() {
   
-  int horizontalDegrees = 180;          // Number of degrees to cover in scan
+  int horizontalDegrees = 180;  // Number of degrees to cover in scan
+  int startingDegree = 0;       // Starting degree for horizontal scan
+  int endingDegree = 1019;      // Ending degree for horizontal scan (180 degrees)
 
   // Position to starting degree (0)
+  towerStepper.moveTo(startingDegree);
+  while (towerStepper.distanceToGo() != 0) {
+    towerStepper.run();
+  }
 
-  //for degree in horizontalDegrees {
+  // Start the scan
+  for (int step = startingDegree; step <= endingDegree; step += 100) {
 
     // Position to degree
+    towerStepper.moveTo(step);
+    while (towerStepper.distanceToGo() != 0) {
+      towerStepper.run();
+    }
 
     // Call vertical scan
-    
+    bool foundSatellite = verticalScan();
+
     // Check what vertical scan says
-
+    if (foundSatellite) {
       // If verticalScan found satellite - End state
+      Serial.println("Satellite found at horizontal degree: " + String(step * 180 / endingDegree));
+      return;
+    }
 
-      // If verticalScan has not found satellite
-
-        //Continue to next degree
-  //};
+    // If verticalScan has not found satellite, continue to next degree
+  }
+  Serial.println("Horizontal scan complete. Satellite not found.");
 };
 
-// State - Vertical Scan
+// Vertical Scan Function
 bool verticalScan() {
 
   // Position to starting degree (90)
@@ -92,7 +106,7 @@ bool checkSignalDummy(){
   delay(50);
 
   // Randomly decide whether a ping receipt is received or not
-  int chanceOfSuccess = 90;                                     // Adjust chance of success as needed - Currenlty 0
+  int chanceOfSuccess = 100;                                     // Adjust chance of success as needed - Currenlty 0
   if (random(0, 100) > chanceOfSuccess) {        
 
     // Simulate a successful ping receipt
@@ -134,12 +148,14 @@ void setup() {
 	towerStepper.setMaxSpeed(1000.0);
 	towerStepper.setAcceleration(50.0);
 	towerStepper.setSpeed(200);            
-	towerStepper.moveTo(1019);                       // Sets position that stepper will move to (in steps) - 360 = 2038, 180 = 1019
+	towerStepper.moveTo(1019);                      // Sets position that stepper will move to (in steps) - 360 = 2038, 180 = 1019
 };
 
 void loop() {
   //verticalScan();              // Testing purposes
   
 	//towerStepper.run();          // Testing purposes
+
+  horizontalScan();        
 
 };
