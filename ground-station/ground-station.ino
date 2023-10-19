@@ -35,6 +35,69 @@ void flexServoArm(){
   servoArm.write(270);
 };
 
+// State - Horizontal Scan
+void horizontalScan() {
+  
+  int horizontalDegrees = 180;          // Number of degrees to cover in scan
+
+  // Position to starting degree (0)
+
+  for degree in horizontalDegrees {
+
+    // Position to degree
+
+    // Call vertical scan
+    
+    // Check what vertical scan says
+
+      // If verticalScan found satellite - End state
+
+      // If verticalScan has not found satellite
+
+        //Continue to next degree
+  };
+};
+
+// State - Vertical Scan
+bool verticalScan() {
+
+  int verticalDegrees = 180;           // Number of degrees to cover in scan
+
+  // Position to starting degree (90)
+
+  for degree in verticalDegrees {
+    // Position to degree
+
+    // Call IR transmitter [checkSignal]
+
+    // Check what checkSignal returns
+
+      // If checkSignal found satellite - Return True
+
+      // If checkSignal did not find satellite 
+
+        // Continue to next degree
+  
+  // Return to horizontalScan
+
+  };
+};
+
+// Sends a ping to satellite and awaits confirmation signal
+bool checkSignal(){
+  // Send ping
+
+  // Wait for ping receipt
+
+  // Is ping receipt received?
+
+    // No
+      // Return False
+
+    // Yes
+      // Return True
+};
+
 void setup() {
 
   // Set pin 9 for servo control
@@ -49,10 +112,5 @@ void setup() {
 }
 
 void loop() {
-
-  myStepper.step(500);
-  delay(500);
-  flexServoArm();
-  myStepper.step(-500);
 
 }
