@@ -74,8 +74,6 @@ bool verticalScan() {
     
     servoArm.write(degree);                           // Position arm to next degree
 
-    //delay(15);                                        // Incremental delays - Adjust as preferred
-
     // Call IR transmitter [checkSignal]
     bool signalFound = checkSignalDummy();            // Using dummy function!!            
 
@@ -111,7 +109,7 @@ bool checkSignalDummy(){
   delay(50);
 
   // Randomly decide whether a ping receipt is received or not
-  int chanceOfSuccess = 100;                                     // Adjust chance of success as needed - Currenlty 0
+  int chanceOfSuccess = 95;                                     // Adjust chance of success as needed - Currenlty 0
   if (random(0, 100) > chanceOfSuccess) {        
 
     // Simulate a successful ping receipt
