@@ -42,7 +42,7 @@ void horizontalScan() {
 
   // Position to starting degree (0)
 
-  for degree in horizontalDegrees {
+  //for degree in horizontalDegrees {
 
     // Position to degree
 
@@ -55,18 +55,23 @@ void horizontalScan() {
       // If verticalScan has not found satellite
 
         //Continue to next degree
-  };
+  //};
 };
 
 // State - Vertical Scan
 bool verticalScan() {
 
-  int verticalDegrees = 180;           // Number of degrees to cover in scan
-
   // Position to starting degree (90)
+  servoArm.write(180);
 
-  for degree in verticalDegrees {
-    // Position to degree
+  // Debug - Adjust as preferred
+  delay(1000);
+
+  for (int degree = 180; degree >= 0; degree -=1) {
+    
+    servoArm.write(degree);                           // Position arm to next degree
+    
+    delay(15);                                        // Incremental delays - Adjust as preferred
 
     // Call IR transmitter [checkSignal]
 
@@ -81,6 +86,9 @@ bool verticalScan() {
   // Return to horizontalScan
 
   };
+
+  // Debug - Adjust as preferred
+  delay(1000);
 };
 
 // Sends a ping to satellite and awaits confirmation signal
@@ -112,5 +120,5 @@ void setup() {
 }
 
 void loop() {
-
+  verticalScan();
 }
