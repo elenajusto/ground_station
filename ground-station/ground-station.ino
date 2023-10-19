@@ -70,25 +70,56 @@ bool verticalScan() {
   for (int degree = 180; degree >= 0; degree -=1) {
     
     servoArm.write(degree);                           // Position arm to next degree
-    
+
     delay(15);                                        // Incremental delays - Adjust as preferred
 
     // Call IR transmitter [checkSignal]
+    bool signalFound = checkSignalDummy();            // Using dummy function!!            
 
     // Check what checkSignal returns
+    if (signalFound == true) {
 
       // If checkSignal found satellite - Return True
+      delay(5000); // DEBUG
+      Serial.println("verticalScan == true"); // DEBUG
+      return true;
 
-      // If checkSignal did not find satellite 
-
-        // Continue to next degree
-  
-  // Return to horizontalScan
+    }  
+    
+    // checkSignal did not find satellite 
+    // Continue to next degree   
 
   };
 
-  // Debug - Adjust as preferred
-  delay(1000);
+   // Debug - Adjust as preferred
+  delay(1000); 
+
+  // Return to horizontalScan
+  Serial.println("verticalScan == false"); // DEBUG
+  return false;
+
+};
+
+// Simulates checkSignal() function
+bool checkSignalDummy(){
+
+  // Simulate the sending of a ping and waiting for a receipt
+  delay(50);
+
+  // Randomly decide whether a ping receipt is received or not
+  int chanceOfSuccess = 90;                                     // Adjust chance of success as needed - Currenlty 0
+  if (random(0, 100) > chanceOfSuccess) {        
+
+    // Simulate a successful ping receipt
+    Serial.println("Signal received!"); // Debug
+    return true;
+
+  } else {
+    // Simulate a failed ping receipt
+    Serial.println("NO SIGNAL :("); // Debug
+    return false;
+
+  };
 };
 
 // Sends a ping to satellite and awaits confirmation signal
