@@ -11,10 +11,10 @@
 #include <Servo.h>
 
 // ********** Stepper Motor **********
-const int stepsPerRevolution = 500;                    // change this to fit the number of steps per revolution
+const int stepsPerRevolution = 500;                    // Number of steps per revolution
 
 // initialize the stepper library on pins 8 through 11:
-Stepper myStepper(stepsPerRevolution, 8, 10, 9, 11);
+Stepper towerStepper(stepsPerRevolution, 8, 9, 10, 11);
 
 // ********** Servo Motor **********
 Servo servoArm;                                        // Servo object. Pin assignment  in setup() loop. Pin = 6
@@ -128,7 +128,7 @@ void setup() {
   servoArm.attach(6);
 
   // set the speed at 60 rpm:
-  myStepper.setSpeed(60);
+  towerStepper.setSpeed(60);
 
   // initialize the serial port:
   Serial.begin(9600);
