@@ -80,8 +80,8 @@ bool verticalScan() {
     if (signalFound == true) {
 
       // If checkSignal found satellite - Return True
-      delay(5000); // DEBUG
-      Serial.println("verticalScan == true"); // DEBUG
+      Serial.println("verticalScan == true");           // DEBUG
+      delay(3000);                                      // DEBUG - Holds arm position for this amount of time
       return true;
 
     }  
@@ -91,11 +91,12 @@ bool verticalScan() {
 
   };
 
-   // Debug - Adjust as preferred
+  Serial.println("verticalScan == false"); // DEBUG
+
+  // Debug - Adjust as preferred
   delay(1000); 
 
   // Return to horizontalScan
-  Serial.println("verticalScan == false"); // DEBUG
   return false;
 
 };
