@@ -7,14 +7,14 @@
 
 
 // ************ Libraries ********************
-#include <Stepper.h>
+#include <AccelStepper.h>
 #include <Servo.h>
 
-// ********** Stepper Motor **********
-const int stepsPerRevolution = 2038;                     // 2038 steps for 28BYJ-48 motor
+// Define step constant
+#define MotorInterfaceType 4
 
 // initialize the stepper library on pins 8 through 11:
-Stepper towerStepper(stepsPerRevolution, 8, 10, 9, 11);  // Step sequence for motor is IN1-IN3-IN2-IN4
+AccelStepper towerStepper(MotorInterfaceType, 8, 10, 9, 11);  // Step sequence for motor is IN1-IN3-IN2-IN4
 
 // ********** Servo Motor **********
 Servo servoArm;                                          // Servo object. Pin assignment  in setup() loop. Pin = 6
@@ -130,21 +130,17 @@ void setup() {
   // Set pin 9 for servo control
   servoArm.attach(6);
   
-  // Stepper motor setup
-  //towerStepper.setSpeed(10);             // set the stepper speed in rpm
+	// set the maximum speed, acceleration factor,
+	// initial speed and the target position
+	towerStepper.setMaxSpeed(1000.0);
+	towerStepper.setAcceleration(50.0);
+	towerStepper.setSpeed(200);            
+	towerStepper.moveTo(1019);                     // Sets position that stepper will move to (in steps) - 360 = 2038, 180 = 1019
 };
 
 void loop() {
   //verticalScan();
   
-  // Rotate CW slowly at 5 RPM
-	towerStepper.setSpeed(5);
-	towerStepper.step(stepsPerRevolution);
-	delay(100);
-	
-	// Rotate CCW quickly at 10 RPM
-	towerStepper.setSpeed(10);
-	towerStepper.step(-stepsPerRevolution);
-	delay(100);
+	towerStepper.run();
 
 };
