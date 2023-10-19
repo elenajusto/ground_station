@@ -11,10 +11,10 @@
 #include <Servo.h>
 
 // ********** Stepper Motor **********
-const int stepsPerRevolution = 500;                    // Number of steps per revolution
+const int stepsPerRevolution = 200;                     // change this to fit the number of steps per revolution
 
 // initialize the stepper library on pins 8 through 11:
-Stepper towerStepper(stepsPerRevolution, 8, 9, 10, 11);
+Stepper towerStepper(stepsPerRevolution, 8, 10, 9, 11);  // Step sequence for motor is IN1-IN3-IN2-IN4
 
 // ********** Servo Motor **********
 Servo servoArm;                                        // Servo object. Pin assignment  in setup() loop. Pin = 6
@@ -124,18 +124,29 @@ bool checkSignal(){
 
 void setup() {
 
-  // Set pin 9 for servo control
-  servoArm.attach(6);
-
-  // set the speed at 60 rpm:
-  towerStepper.setSpeed(60);
-
   // initialize the serial port:
   Serial.begin(9600);
 
-}
+  // Set pin 9 for servo control
+  servoArm.attach(6);
+  
+  // Stepper motor setup
+  towerStepper.setSpeed(60);             // set the stepper speed in rpm
+};
 
 void loop() {
   //verticalScan();
+  
+  // step one revolution  in one direction:
 
-}
+  Serial.println("clockwise");
+  towerStepper.step(stepsPerRevolution);
+  delay(500);
+
+
+  // step one revolution in the other direction:
+
+  Serial.println("counterclockwise");
+  towerStepper.step(-stepsPerRevolution);
+  delay(500);
+};
