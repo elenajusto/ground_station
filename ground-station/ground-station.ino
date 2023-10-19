@@ -10,14 +10,14 @@
 #include <AccelStepper.h>
 #include <Servo.h>
 
-// Define step constant
-#define MotorInterfaceType 4
+// ************ Variables ********************
 
-// initialize the stepper library on pins 8 through 11:
+#define MotorInterfaceType 4                                  // Step constant for stepper motor
 AccelStepper towerStepper(MotorInterfaceType, 8, 10, 9, 11);  // Step sequence for motor is IN1-IN3-IN2-IN4
 
-// ********** Servo Motor **********
-Servo servoArm;                                          // Servo object. Pin assignment  in setup() loop. Pin = 6
+Servo servoArm;                                               // Servo object. Pin assignment  in setup() loop. Pin = 6
+
+// ************ Functions ********************
 
 // State - Horizontal Scan
 void horizontalScan() {
@@ -85,7 +85,7 @@ bool verticalScan() {
 
 };
 
-// Simulates checkSignal() function
+// ************** DUMMMY *************** Simulates checkSignal() function  
 bool checkSignalDummy(){
 
   // Simulate the sending of a ping and waiting for a receipt
@@ -124,23 +124,22 @@ bool checkSignal(){
 
 void setup() {
 
-  // initialize the serial port:
+  // Initialize the serial port:
   Serial.begin(9600);
 
-  // Set pin 9 for servo control
-  servoArm.attach(6);
+  // Servo motor setup
+  servoArm.attach(6);                             // Set pin 9 for servo control
   
-	// set the maximum speed, acceleration factor,
-	// initial speed and the target position
+	// Stepper motor setup
 	towerStepper.setMaxSpeed(1000.0);
 	towerStepper.setAcceleration(50.0);
 	towerStepper.setSpeed(200);            
-	towerStepper.moveTo(1019);                     // Sets position that stepper will move to (in steps) - 360 = 2038, 180 = 1019
+	towerStepper.moveTo(1019);                       // Sets position that stepper will move to (in steps) - 360 = 2038, 180 = 1019
 };
 
 void loop() {
-  //verticalScan();
+  //verticalScan();              // Testing purposes
   
-	towerStepper.run();
+	//towerStepper.run();          // Testing purposes
 
 };
