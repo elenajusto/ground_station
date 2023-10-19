@@ -21,12 +21,32 @@ Servo servoArm;                                               // Servo object. P
 
 // Horizontal Scan Function
 void horizontalScan() {
+  
+  Serial.println("Starting horizontal scan");                 // Debug statement
 
-  int horizontalDegrees = 180;          // Number of degrees to cover in scan
+  int stepsToCover = 1019;                                    // Number of degrees to cover in steps: 360 = 2038, 180 = 1019
 
-  // Position to starting degree (0)
+  for (int step = 0; step <= stepsToCover; step += 100){      // Move in steps of 100
 
-  for degree in horizontalDegrees {
+    // Position to next step of stepsToCover
+    towerStepper.moveTo(step);                                
+    while (towerStepper.distanceToGo() != 0) {
+      towerStepper.run();
+    }
+
+    Serial.print("Step: ");                                   // Debug statement
+    Serial.print(step);                                       // Debug statement
+    Serial.print(" of ");                                     // Debug statement
+    Serial.print(stepsToCover);                               // Debug statement
+    Serial.println(" steps");                                 // Debug statement
+
+    // Call vertical scan here
+    delay(1000);                                              // 1 second delay - Placeholder for calling scan
+  };
+
+  Serial.println("Completed horizontal scan");                 // Debug statement
+
+ // for degree in horizontalDegrees 
 
     // Position to degree
 
@@ -39,7 +59,6 @@ void horizontalScan() {
       // If verticalScan has not found satellite
 
         //Continue to next degree
-  };
 };
 
 // Vertical Scan Function
@@ -134,15 +153,15 @@ void setup() {
 	towerStepper.setMaxSpeed(1000.0);
 	towerStepper.setAcceleration(50.0);
 	towerStepper.setSpeed(200);            
-	towerStepper.moveTo(-500);                      // Sets position that stepper will move to (in steps) - 360 = 2038, 180 = 1019
+	//towerStepper.moveTo(-500);                      // Sets position that stepper will move to (in steps) - 360 = 2038, 180 = 1019
 };
 
 void loop() {
-  verticalScan();              // Testing purposes
+  //verticalScan();              // Testing purposes
   
 	//towerStepper.run();          // Testing purposes
 
-  //horizontalScan();        
+  horizontalScan();        
   //towerStepper.run();
 
 };
