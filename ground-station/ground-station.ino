@@ -34,14 +34,14 @@ void horizontalScan() {
       towerStepper.run();
     }
 
+    // Calls vertical scan
+    verticalScan();
+
     Serial.print("Step: ");                                   // Debug statement
     Serial.print(step);                                       // Debug statement
     Serial.print(" of ");                                     // Debug statement
     Serial.print(stepsToCover);                               // Debug statement
     Serial.println(" steps");                                 // Debug statement
-
-    // Call vertical scan here
-    delay(1000);                                              // 1 second delay - Placeholder for calling scan
   };
 
   Serial.println("Completed horizontal scan");                 // Debug statement
@@ -70,11 +70,11 @@ bool verticalScan() {
   // Debug - Adjust as preferred
   delay(1000);
 
-  for (int degree = 180; degree >= 0; degree -=1) {
+  for (int degree = 180; degree >= 0; degree -=10) {
     
     servoArm.write(degree);                           // Position arm to next degree
 
-    delay(15);                                        // Incremental delays - Adjust as preferred
+    //delay(15);                                        // Incremental delays - Adjust as preferred
 
     // Call IR transmitter [checkSignal]
     bool signalFound = checkSignalDummy();            // Using dummy function!!            
