@@ -129,6 +129,35 @@ bool checkSignal(){
       // Return True
 };
 
+// Tracking state
+bool trackingState() {
+
+  int degreePerStep = 1;                         // Move this amount of degrees per check
+
+  // Servo arm go left by degreePerStep
+    // Call checkSignal()
+      // Yes Signal? Exit
+      // No Signal? Return to original position - degreePerStep to the right
+  
+  // Servo arm go right by degreePerStep
+    // Call checkSignal()
+      // Yes Signal? Exit
+      // No Signal? Return to original position - degreePerStep to the left
+  
+  // Servo arm go up by degreePerStep
+    // Call checkSignal()
+      // Yes Signal? Exit
+      // No Signal? Return to original position - degreePerStep down
+  
+  // Servo arm go down by degreePerStep
+    // Call checkSignal()
+      // Yes Signal? Exit
+      // No Signal? Return to original position - degreePerStep up
+
+  // Return fail - Caller code will then start whole sky scan
+
+}
+
 void setup() {
 
   // Initialize the serial port:
