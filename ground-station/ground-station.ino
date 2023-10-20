@@ -17,6 +17,9 @@ AccelStepper towerStepper(MotorInterfaceType, 8, 10, 9, 11);  // Step sequence f
 
 Servo servoArm;                                               // Servo object. Pin assignment  in setup() loop. Pin = 6
 
+int lastKnownServoPosition = 0;                                    // Last known vertical position
+int lastKnownStepperPosition = 0;                                  // Last known horizontal position
+
 // ************ Functions ********************
 
 // Horizontal Scan Function - Scans the whole sky, using vertical scan and checkSignal downstream.
@@ -36,6 +39,8 @@ void horizontalScan() {
 
     // Calls vertical scan
     if (verticalScan()) {
+      lastKnownServoPosition = servoArm.read();                    // Saves servo angle of last known sat position
+      lastKnownStepperPosition = towerStepper.currentPosition();   // Saves stepper angle of last known sat position
       Serial.println("SIGNAL FOUND - EXITING SCAN");
       break;                                                  // Exits horizontal scan if signal is detected from vertical scan
     };
@@ -99,7 +104,7 @@ bool checkSignalDummy(){
   delay(50);
 
   // Randomly decide whether a ping receipt is received or not
-  int chanceOfSuccess = 95;                                     // Adjust chance of success as needed - Currenlty 5%
+  int chanceOfSuccess = 100;                                     // Adjust chance of success as needed - Currenlty 0%
   if (random(0, 100) > chanceOfSuccess) {        
 
     // Simulate a successful ping receipt
@@ -132,15 +137,17 @@ bool checkSignal(){
 // Tracking state
 bool trackingState() {
 
-  Serial.println("Starting track");               // Debug statement
-  int degreePerStep = 100;                          // Move this amount of steps per check
+  Serial.println("Starting track");                // Debug statement
+  int degreePerStep = 50;                          // Move this amount of steps per check for stepper
+  int degreeForServo = 25;                         // Servo arm checks this vertical value up and down
 
   Serial.println("Moving left of last known position.");   // Debug statement
   // Stepper go left by degreePerStep
-  towerStepper.moveTo(-degreePerStep);                                
+  towerStepper.moveTo(lastKnownStepperPosition - degreePerStep);                                
   while (towerStepper.distanceToGo() != 0) {
     towerStepper.run();
   };
+  delay(2000);
   // Call checkSignal()
   if (checkSignalDummy()) {
     // Yes Signal? Exit
@@ -148,7 +155,8 @@ bool trackingState() {
   } else {
     // Return to original position - degreePerStep to the right 
     Serial.println("Nothing detected on left. Continuing track...");   // Debug statement
-    towerStepper.moveTo(degreePerStep);                                
+    delay(2000);
+    towerStepper.moveTo(lastKnownStepperPosition + degreePerStep);                                
     while (towerStepper.distanceToGo() != 0) {
     towerStepper.run();
     }
@@ -156,10 +164,11 @@ bool trackingState() {
   
   Serial.println("Moving right of last known position.");   // Debug statement
   // Stepper go right by degreePerStep
-  towerStepper.moveTo(degreePerStep);                                
+  towerStepper.moveTo(lastKnownStepperPosition + degreePerStep);                                
   while (towerStepper.distanceToGo() != 0) {
     towerStepper.run();
     };
+  delay(2000);
   // Call checkSignal()
   if (checkSignalDummy()) {
     // Yes Signal? Exit
@@ -167,7 +176,8 @@ bool trackingState() {
   } else {
     // No Signal? Return to original position - degreePerStep to the left
     Serial.println("Nothing detected on right. Continuing track...");     // Debug statement
-    towerStepper.moveTo(-degreePerStep);                                
+    delay(2000);
+    towerStepper.moveTo(lastKnownStepperPosition - degreePerStep);                                
     while (towerStepper.distanceToGo() != 0) {
       towerStepper.run();
       };
@@ -175,18 +185,43 @@ bool trackingState() {
 
   
   // Servo arm go up by degreePerStep
+  Serial.println("Moving up of last known position.");
+  servoArm.write(lastKnownServoPosition - degreeForServo);
+
+  delay(2000);
+
   // Call checkSignal()
+  if (checkSignalDummy()){
     // Yes Signal? Exit
+    return true;
+  } else {
     // No Signal? Return to original position - degreePerStep down
+    Serial.println("Nothing detected up. Continuing track...");
+    delay(2000);
+    servoArm.write(lastKnownServoPosition);
+    delay(2000);
+  };
   
   // Servo arm go down by degreePerStep
+  Serial.println("Moving down of last known position.");
+  servoArm.write(lastKnownServoPosition + degreeForServo);
+
+  delay(2000);
+
   // Call checkSignal()
+  if (checkSignalDummy()){
     // Yes Signal? Exit
+    return true;
+  } else {
     // No Signal? Return to original position - degreePerStep up
+    Serial.println("Nothing detected down. Continuing track...");
+    delay(2000);
+    servoArm.write(lastKnownServoPosition);
+    delay(2000);
+  };
 
-  // Return fail - Caller code will then start whole sky scan
-
-  Serial.println("Tracking state completed.");
+  Serial.println("Tracking state completed. Nothing found");
+  return false;
 }
 
 void setup() {
@@ -201,13 +236,18 @@ void setup() {
 	towerStepper.setMaxSpeed(1000.0);
 	towerStepper.setAcceleration(50.0);
 	towerStepper.setSpeed(200);            
-
-  //horizontalScan();                              // Run a whole sky scan once
   
   // TESTING AREA
-  trackingState();
+  lastKnownServoPosition = 90;
+  lastKnownStepperPosition = 0;
+
+  servoArm.write(lastKnownServoPosition);
 };
 
 void loop() {  
-  trackingState();
+
+  if (!trackingState()){
+    horizontalScan();
+  };
+
 };
