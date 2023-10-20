@@ -39,8 +39,6 @@ void horizontalScan() {
 
     // Calls vertical scan
     if (verticalScan()) {
-      lastKnownServoPosition = servoArm.read();                    // Saves servo angle of last known sat position
-      lastKnownStepperPosition = towerStepper.currentPosition();   // Saves stepper angle of last known sat position
       Serial.println("SIGNAL FOUND - EXITING SCAN");
       break;                                                  // Exits horizontal scan if signal is detected from vertical scan
     };
@@ -109,6 +107,8 @@ bool checkSignalDummy(){
 
     // Simulate a successful ping receipt
     Serial.println("Signal received!"); // Debug
+    lastKnownServoPosition = servoArm.read();                    // Saves servo angle of last known sat position
+    lastKnownStepperPosition = towerStepper.currentPosition();   // Saves stepper angle of last known sat position
     return true;
 
   } else {
