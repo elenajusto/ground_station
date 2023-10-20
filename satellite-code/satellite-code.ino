@@ -7,19 +7,25 @@
 
 // ************ Libraries ********************
 #include <Servo.h>
-#include <Wire.h>         
-#include <SparkFun_MMA8452Q.h>                    // Includes the SFE_MMA8452Q library
+#include <Wire.h>                                    // I2C communication for accelerometer
+#include <SparkFun_MMA8452Q.h>                       // Accelerometer library
 
 // ************ Variables ********************
 
-int satLED = 4;                                   // Digital output pin for LED
+int satLED = 4;                                      // Digital output pin for LED
 
-Servo satArm;                                     // Servo object. Pin assignment  in setup() loop. Pin = 9
+Servo satArm;                                        // Servo object. Pin assignment  in setup() loop. Pin = 9
 
-MMA8452Q accel;                                   // Instance of the MMA8452Q (accelero) class
+MMA8452Q accel;                                      // Instance of the MMA8452Q (accelero) class
+
+
+int ledState = LOW;                                  // Setting LED state
+const long delayInterval = 1000;                     // Blink interval for LED
+unsigned long flashLEDPreviousMillis = 0;            // Last time LED was updated
 
 // ************ Functions ********************
 
+// Moves the arm of the satellite to a preset position (0 or 180 for horizontal, 90 for vertical)
 void moveSatArm(int position) {
   switch(position) {
     case 0:
@@ -31,6 +37,26 @@ void moveSatArm(int position) {
     case 180:
       satArm.write(180);
       break;
+  }
+}
+
+// Flash the onboard LED based on flashInterval variable
+void flashLED(){
+  
+  unsigned long flashLEDCurrentMillis = millis();                           // Crrent millis time
+
+  if (flashLEDCurrentMillis - flashLEDPreviousMillis >= delayInterval) {
+    flashLEDPreviousMillis =  flashLEDCurrentMillis;                        // Updates last LED update time
+   
+    // Toggle LED state
+    if (ledState == LOW) {
+      ledState = HIGH;
+    } else {
+      ledState = LOW;
+    }
+
+    // Write toggled LED state to LED
+    digitalWrite(satLED, ledState);                                         
   }
 }
 
@@ -51,23 +77,5 @@ void setup() {
 
 void loop() {
 
-  digitalWrite(satLED, LOW);
-  Serial.println("Move arm to 0");
-  moveSatArm(0);
-  delay(1000);
-
-  digitalWrite(satLED, HIGH);
-  Serial.println("Move arm to 90");
-  moveSatArm(90);
-  delay(1000);
-
-  digitalWrite(satLED, LOW);
-  Serial.println("Move arm to 180");
-  moveSatArm(180);
-  delay(1000);
-
-  digitalWrite(satLED, HIGH);
-  Serial.println("Move arm to 90");
-  moveSatArm(90);
-  delay(1000);
+  flashLED();
 }
