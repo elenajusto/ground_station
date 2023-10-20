@@ -132,30 +132,61 @@ bool checkSignal(){
 // Tracking state
 bool trackingState() {
 
-  int degreePerStep = 1;                         // Move this amount of degrees per check
+  Serial.println("Starting track");               // Debug statement
+  int degreePerStep = 100;                          // Move this amount of steps per check
 
+  Serial.println("Moving left of last known position.");   // Debug statement
   // Stepper go left by degreePerStep
-    // Call checkSignal()
-      // Yes Signal? Exit
-      // No Signal? Return to original position - degreePerStep to the right
+  towerStepper.moveTo(-degreePerStep);                                
+  while (towerStepper.distanceToGo() != 0) {
+    towerStepper.run();
+  };
+  // Call checkSignal()
+  if (checkSignalDummy()) {
+    // Yes Signal? Exit
+    return true;
+  } else {
+    // Return to original position - degreePerStep to the right 
+    Serial.println("Nothing detected on left. Continuing track...");   // Debug statement
+    towerStepper.moveTo(degreePerStep);                                
+    while (towerStepper.distanceToGo() != 0) {
+    towerStepper.run();
+    }
+  };
   
+  Serial.println("Moving right of last known position.");   // Debug statement
   // Stepper go right by degreePerStep
-    // Call checkSignal()
-      // Yes Signal? Exit
-      // No Signal? Return to original position - degreePerStep to the left
+  towerStepper.moveTo(degreePerStep);                                
+  while (towerStepper.distanceToGo() != 0) {
+    towerStepper.run();
+    };
+  // Call checkSignal()
+  if (checkSignalDummy()) {
+    // Yes Signal? Exit
+    return true;
+  } else {
+    // No Signal? Return to original position - degreePerStep to the left
+    Serial.println("Nothing detected on right. Continuing track...");     // Debug statement
+    towerStepper.moveTo(-degreePerStep);                                
+    while (towerStepper.distanceToGo() != 0) {
+      towerStepper.run();
+      };
+    };
+
   
   // Servo arm go up by degreePerStep
-    // Call checkSignal()
-      // Yes Signal? Exit
-      // No Signal? Return to original position - degreePerStep down
+  // Call checkSignal()
+    // Yes Signal? Exit
+    // No Signal? Return to original position - degreePerStep down
   
   // Servo arm go down by degreePerStep
-    // Call checkSignal()
-      // Yes Signal? Exit
-      // No Signal? Return to original position - degreePerStep up
+  // Call checkSignal()
+    // Yes Signal? Exit
+    // No Signal? Return to original position - degreePerStep up
 
   // Return fail - Caller code will then start whole sky scan
 
+  Serial.println("Tracking state completed.");
 }
 
 void setup() {
@@ -171,9 +202,12 @@ void setup() {
 	towerStepper.setAcceleration(50.0);
 	towerStepper.setSpeed(200);            
 
-  horizontalScan();                              // Run a whole sky scan once
+  //horizontalScan();                              // Run a whole sky scan once
+  
+  // TESTING AREA
+  trackingState();
 };
 
 void loop() {  
-
+  trackingState();
 };
