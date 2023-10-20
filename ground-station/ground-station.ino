@@ -134,12 +134,12 @@ bool trackingState() {
 
   int degreePerStep = 1;                         // Move this amount of degrees per check
 
-  // Servo arm go left by degreePerStep
+  // Stepper go left by degreePerStep
     // Call checkSignal()
       // Yes Signal? Exit
       // No Signal? Return to original position - degreePerStep to the right
   
-  // Servo arm go right by degreePerStep
+  // Stepper go right by degreePerStep
     // Call checkSignal()
       // Yes Signal? Exit
       // No Signal? Return to original position - degreePerStep to the left
