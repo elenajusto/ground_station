@@ -77,14 +77,10 @@ bool verticalScan() {
       Serial.println("verticalScan == true");           // DEBUG
       delay(3000);                                      // DEBUG - Holds arm position for this amount of time
       return true;
-
     }  
-    
     // checkSignal did not find satellite 
     // Continue to next degree   
-
   };
-
   Serial.println("verticalScan == false"); // DEBUG
 
   // Debug - Adjust as preferred
@@ -92,7 +88,6 @@ bool verticalScan() {
 
   // Return to horizontalScan
   return false;
-
 };
 
 // ************** DUMMMY *************** Simulates checkSignal() function  
@@ -137,9 +132,9 @@ bool checkSignal(){
 // Tracking state
 bool trackingState() {
 
-  Serial.println("Starting track");                // Debug statement
-  int degreePerStep = 50;                          // Move this amount of steps per check for stepper
-  int degreeForServo = 25;                         // Servo arm checks this vertical value up and down
+  Serial.println("Starting track");                        // Debug statement
+  int degreePerStep = 50;                                  // Move this amount of steps per check for stepper
+  int degreeForServo = 25;                                 // Servo arm checks this vertical value up and down
 
   Serial.println("Moving left of last known position.");   // Debug statement
   // Stepper go left by degreePerStep
@@ -183,7 +178,6 @@ bool trackingState() {
       };
     };
 
-  
   // Servo arm go up by degreePerStep
   Serial.println("Moving up of last known position.");
   servoArm.write(lastKnownServoPosition - degreeForServo);
@@ -241,11 +235,12 @@ void setup() {
   lastKnownServoPosition = 90;
   lastKnownStepperPosition = 0;
 
-  servoArm.write(lastKnownServoPosition);
+  servoArm.write(lastKnownServoPosition);        // Moves servo to a 90 degree starting position
 };
 
 void loop() {  
 
+  // Continously tries to track satellite from last known position. Commences full sky scan if not found from track
   if (!trackingState()){
     horizontalScan();
   };
