@@ -71,11 +71,13 @@ void setup() {
   // Servo motor setup
   satArm.attach(9);                             // Set pin 9 for servo control
 
+  // Position servo arm to be horizontal upon start
+  satArm.write(0);
+  
   // LED turns on upon start
   digitalWrite(satLED, HIGH);                   
 }
 
 void loop() {
 
-  flashLED();
 }
