@@ -60,6 +60,39 @@ void flashLED(){
   }
 }
 
+// Reads accel.cx, accel.cy, and accel.cz variables from accelerometer [Taken from Jim Lindblom @ SparkFun Electronics]
+void printCalculatedAccels() { 
+  Serial.print(accel.cx, 3);
+  Serial.print("\t");
+  Serial.print(accel.cy, 3);
+  Serial.print("\t");
+  Serial.print(accel.cz, 3);
+  Serial.print("\t");
+}
+
+// Reads out the orientation of the satellite [Modified from Jim Lindblom @ SparkFun Electronics]
+void printOrientation() {
+  byte pl = accel.readPL();
+  switch (pl)
+  {
+  case PORTRAIT_U:
+    Serial.print("Yaw Left");   // Portrait Up
+    break;
+  case PORTRAIT_D:
+    Serial.print("Yaw Right");  // Portrait Down
+    break;
+  case LANDSCAPE_R:
+    Serial.print("Pitch Up");  // Landscape Right
+    break;
+  case LANDSCAPE_L:
+    Serial.print("Pitch Down");  // Landscape Left
+    break;
+  case LOCKOUT:
+    Serial.print("Flat");
+    break;
+  }
+}
+
 void setup() {
 
   // Initialise the serial port:
@@ -73,11 +106,19 @@ void setup() {
 
   // Position servo arm to be horizontal upon start
   satArm.write(0);
-  
+
   // LED turns on upon start
   digitalWrite(satLED, HIGH);                   
 }
 
 void loop() {
 
+  // Continous stream of accelerometer data
+  if (accel.available()){
+    accel.read();
+    printCalculatedAccels();
+    printOrientation();
+    Serial.println();
+  }
+  
 }
