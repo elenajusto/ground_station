@@ -1,7 +1,4 @@
 # ground_station
-Welcome to the repo for my 41099 Introduction to Mechatronics Engineering Assessment 4 project, 
-which is an Arduino based ground station designed to communicate with a cardboard box that will 
-act as a "satellite" via IR.
 
 <b> Project Description </b>
 
