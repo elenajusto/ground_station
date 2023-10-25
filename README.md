@@ -15,3 +15,12 @@ communications.
 
 
 ![image](https://github.com/elenajusto/ground_station/assets/56148816/b062e169-30c0-40a3-ab6c-f01345478b4d)
+
+
+# Video Demonstrations
+
+<b>Latest Prototype</b>
+Demonstrating whole sky scanning capability (does not have actual tranceivers operating, this is 
+just a demonstration of theactuation process for scanning).
+
+[![Video]]([https://www.youtube.com/watch?v=jXnoFqcAkQA](https://youtu.be/PAWQHoBQUlc?si=53GkWd1pDEewEPxW)https://youtu.be/PAWQHoBQUlc?si=53GkWd1pDEewEPxW)
