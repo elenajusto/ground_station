@@ -23,4 +23,4 @@ communications.
 Demonstrating whole sky scanning capability (does not have actual tranceivers operating, this is 
 just a demonstration of theactuation process for scanning).
 
-([https://www.youtube.com/watch?v=jXnoFqcAkQA](https://youtu.be/PAWQHoBQUlc?si=53GkWd1pDEewEPxW)https://youtu.be/PAWQHoBQUlc?si=53GkWd1pDEewEPxW)
+[![YouTube Video](https://img.youtube.com/vi/PAWQHoBQUlc/0.jpg)](https://youtu.be/PAWQHoBQUlc)
