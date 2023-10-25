@@ -19,7 +19,15 @@ communications.
 
 # Video Demonstrations
 
+<b>First Operational Prototype</b>
+
+This is the first operational prototype of the ground station where the tower has been mounted
+onto the platform and is able to use both motors for 180 by 180 degree actuation.
+
+[![YouTube Video](https://img.youtube.com/vi/fiRhYOymjR4/0.jpg)](https://youtube.com/shorts/fiRhYOymjR4)
+
 <b>Latest Prototype</b>
+
 Demonstrating whole sky scanning capability (does not have actual tranceivers operating, this is 
 just a demonstration of theactuation process for scanning).
 
