@@ -1,29 +1,42 @@
 // ************ Description *****************
 
 /*
-Created by Elena Justo
-
-This file is responsible for controlling the ground station, including:
-- The servo arm carrying the IR sensors
-- The stepper motor that rotates the tower
-- The IR transmitter code for the ground station
-- The IR receiver code for the ground station
+* Created by Elena Justo
+*
+* This file is responsible for controlling the ground station, including:
+* - The servo arm carrying the IR sensors
+* - The stepper motor that rotates the tower
+* - The IR transmitter code for the ground station
+* - The IR receiver code for the ground station
 */
 
 // ************ Libraries ********************
 #include <Arduino.h>
 #include <AccelStepper.h>
 #include <Servo.h>
+#include <IRremote.h>
 
 
 // ************ Variables ********************
 
-
+// Stepper Motor Variables
 #define MotorInterfaceType 4                                  // Step constant for stepper motor
 AccelStepper towerStepper(MotorInterfaceType, 8, 10, 9, 11);  // Step sequence for motor is IN1-IN3-IN2-IN4
 
+// Servo Motor Variables
 Servo servoArm;                                               // Servo object. Pin assignment  in setup() loop. Pin = 6
 
+// IR Transmission Variables
+int IR_LED_PIN = 13;   
+IRsend irsend;                                                // Initialise the IRsend object
+String message = "ping";                                      // Message being sent
+int delayTime = 1000;                                         // Time to wait between each ping
+int messageDelay = 50;                                        // Time to wait between each character being sent
+
+// IR Receiving Variables
+int IR_RECEIVE_PIN = 3;                                       // The pin the IR receiver is connected to
+IRrecv irrecv(IR_RECEIVE_PIN);
+decode_results results;
 
 // ************ Functions ********************
 
