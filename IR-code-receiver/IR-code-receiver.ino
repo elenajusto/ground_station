@@ -1,5 +1,5 @@
 // ************ Description *****************
-// Program:     IR Communication Code
+// Program:     IR Communication Code - Receiver
 // Name:        Elena Justo
 // SID:         24429298
 // Subject:     41099 Introduction to Mechatronics Engineering
