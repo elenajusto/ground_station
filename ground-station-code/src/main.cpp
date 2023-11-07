@@ -27,37 +27,26 @@ Servo servoArm;                                               // Servo object. P
 
 // ************ Functions ********************
 
+// ************** DUMMMY *************** Simulates checkSignal() function  
+bool checkSignalDummy(){
 
-// Horizontal Scan Function - Scans the whole sky, using vertical scan and checkSignal downstream.
-void horizontalScan() {
-  
-  Serial.println("Starting horizontal scan");                 // Debug statement
+  // Simulate the sending of a ping and waiting for a receipt
+  delay(50);
 
-  int stepsToCover = 1019;                                    // Number of degrees to cover in steps: 360 = 2038, 180 = 1019
+  // Randomly decide whether a ping receipt is received or not
+  int chanceOfSuccess = 100;                                     // Adjust chance of success as needed - Currenlty 0%
+  if (random(0, 100) > chanceOfSuccess) {        
 
-  for (int step = 0; step <= stepsToCover; step += 100){      // Move in steps of 100
+    // Simulate a successful ping receipt
+    Serial.println("Signal received!"); // Debug
+    return true;
 
-    // Position to next step of stepsToCover
-    towerStepper.moveTo(step);                                
-    while (towerStepper.distanceToGo() != 0) {
-      towerStepper.run();
-    }
+  } else {
+    // Simulate a failed ping receipt
+    Serial.println("NO SIGNAL :("); // Debug
+    return false;
 
-    // Calls vertical scan
-    if (verticalScan()) {
-      Serial.println("SIGNAL FOUND - EXITING SCAN");
-      break;                                                  // Exits horizontal scan if signal is detected from vertical scan
-    };
-
-    Serial.print("Step: ");                                   // Debug statement
-    Serial.print(step);                                       // Debug statement
-    Serial.print(" of ");                                     // Debug statement
-    Serial.print(stepsToCover);                               // Debug statement
-    Serial.println(" steps");                                 // Debug statement
   };
-
-  Serial.println("Completed horizontal scan");                 // Debug statement
-
 };
 
 // Vertical Scan Function
@@ -101,26 +90,36 @@ bool verticalScan() {
 
 };
 
-// ************** DUMMMY *************** Simulates checkSignal() function  
-bool checkSignalDummy(){
+// Horizontal Scan Function - Scans the whole sky, using vertical scan and checkSignal downstream.
+void horizontalScan() {
+  
+  Serial.println("Starting horizontal scan");                 // Debug statement
 
-  // Simulate the sending of a ping and waiting for a receipt
-  delay(50);
+  int stepsToCover = 1019;                                    // Number of degrees to cover in steps: 360 = 2038, 180 = 1019
 
-  // Randomly decide whether a ping receipt is received or not
-  int chanceOfSuccess = 100;                                     // Adjust chance of success as needed - Currenlty 0%
-  if (random(0, 100) > chanceOfSuccess) {        
+  for (int step = 0; step <= stepsToCover; step += 100){      // Move in steps of 100
 
-    // Simulate a successful ping receipt
-    Serial.println("Signal received!"); // Debug
-    return true;
+    // Position to next step of stepsToCover
+    towerStepper.moveTo(step);                                
+    while (towerStepper.distanceToGo() != 0) {
+      towerStepper.run();
+    }
 
-  } else {
-    // Simulate a failed ping receipt
-    Serial.println("NO SIGNAL :("); // Debug
-    return false;
+    // Calls vertical scan
+    if (verticalScan()) {
+      Serial.println("SIGNAL FOUND - EXITING SCAN");
+      break;                                                  // Exits horizontal scan if signal is detected from vertical scan
+    };
 
+    Serial.print("Step: ");                                   // Debug statement
+    Serial.print(step);                                       // Debug statement
+    Serial.print(" of ");                                     // Debug statement
+    Serial.print(stepsToCover);                               // Debug statement
+    Serial.println(" steps");                                 // Debug statement
   };
+
+  Serial.println("Completed horizontal scan");                 // Debug statement
+
 };
 
 void setup() {
