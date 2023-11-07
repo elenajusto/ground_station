@@ -99,7 +99,7 @@ bool checkSignalDummy(){
   delay(50);
 
   // Randomly decide whether a ping receipt is received or not
-  int chanceOfSuccess = 95;                                     // Adjust chance of success as needed - Currenlty 5%
+  int chanceOfSuccess = 100;                                     // Adjust chance of success as needed - Currenlty 5%
   if (random(0, 100) > chanceOfSuccess) {        
 
     // Simulate a successful ping receipt
@@ -137,14 +137,14 @@ void setup() {
   // Servo motor setup
   servoArm.attach(6);                             // Set pin 9 for servo control
   
+  servoArm.write(90);
+
 	// Stepper motor setup
 	towerStepper.setMaxSpeed(1000.0);
 	towerStepper.setAcceleration(50.0);
 	towerStepper.setSpeed(200);            
-
-  horizontalScan();                              // Run a whole sky scan once
 };
 
 void loop() {  
-
+  horizontalScan();                              // Run a whole sky scan
 };
