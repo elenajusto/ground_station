@@ -26,21 +26,59 @@ AccelStepper towerStepper(MotorInterfaceType, 8, 10, 9, 11);  // Step sequence f
 // Servo Motor Variables
 Servo servoArm;                                               // Servo object. Pin assignment  in setup() loop. Pin = 6
 
-// IR Transmission Variables
-int IR_LED_PIN = 13;   
+// IR  Variables
+int IR_LED_PIN = 13;                                          // Signal out pin for transmitter
 IRsend irsend;                                                // Initialise the IRsend object
-String message = "ping";                                      // Message being sent
-int delayTime = 1000;                                         // Time to wait between each ping
+int delayTime = 100;                                          // Time to wait between each ping
 int messageDelay = 50;                                        // Time to wait between each character being sent
 
-// IR Receiving Variables
-int IR_RECEIVE_PIN = 3;                                       // The pin the IR receiver is connected to
+int IR_RECEIVE_PIN = 3;                                       // Signal pin for IR receiver 
 IRrecv irrecv(IR_RECEIVE_PIN);
 decode_results results;
 
+const uint8_t PING_COMMAND = 0x01;                            // Command for ping - Hex value for "1"
+const uint8_t ACK_COMMAND = 0x02;                             // Command for ack - Hex value for "2"
+
 // ************ Functions ********************
 
-// ************** DUMMMY *************** Simulates checkSignal() function  
+bool listenForAck() {
+  Serial.println(F("Listening for ACK..."));
+
+  unsigned long startTime = millis();
+  bool ackReceived = false;
+
+  while (millis() - startTime < delayTime) {     // Listen for an ACK within the specified delayTime
+    if (irrecv.decode(&results)) {               // Check if data is received
+      if (results.value == ACK_COMMAND) {        // Check if the received data is the ACK_COMMAND
+        Serial.println(F("ACK received!"));
+        ackReceived = true;
+        break;
+      }
+      irrecv.resume(); // Prepare for the next value
+    }
+  }
+
+  if (!ackReceived) {
+    Serial.println(F("No ACK received."));
+  }
+
+  return ackReceived;
+}
+
+void sendPing() {
+  Serial.println(F("Sending ping..."));          // Serial debug statement
+  irsend.sendNEC(0x00, PING_COMMAND, 32);        // Send the ping command (assuming the NEC protocol and 32 bits of data)
+
+  bool ack = listenForAck();                     // Call the function to listen for ACK
+  
+  if(ack) {
+    Serial.println("Satellite found :)");
+  } else {
+    Serial.println("Satellite not found :(");
+  }
+}
+
+// Simulates checkSignal() function  
 bool checkSignalDummy(){
 
   // Simulate the sending of a ping and waiting for a receipt
@@ -131,7 +169,7 @@ void horizontalScan() {
     Serial.println(" steps");                                 // Debug statement
   };
 
-  Serial.println("Completed horizontal scan");                 // Debug statement
+  Serial.println("Completed horizontal scan");                // Debug statement
 
 };
 
@@ -142,16 +180,25 @@ void setup() {
 
   // Servo motor setup
   servoArm.attach(6);                             // Set pin 6 for servo control
+  servoArm.write(0);                              // Start arm at a horizontal right angle
   
 	// Stepper motor setup
 	towerStepper.setMaxSpeed(1000.0);
 	towerStepper.setAcceleration(50.0);
-	towerStepper.setSpeed(200);            
+	towerStepper.setSpeed(200);       
+
+  // IR Receiver setup
+  irsend.begin(IR_LED_PIN);                           // Start the transmitter
+  irrecv.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);  // Start the receiver
+
 };
 
 void loop() {  
 
   // Continously scan the sky
-  horizontalScan();          
+  // horizontalScan();          
+
+  // Continously send a ping and wait for acknowledgement from satellite
+  sendPing();
 
 };
