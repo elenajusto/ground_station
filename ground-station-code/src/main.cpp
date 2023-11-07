@@ -189,7 +189,7 @@ void setup() {
 
   // IR Receiver setup
   irsend.begin(IR_LED_PIN);                           // Start the transmitter
-  irrecv.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);  // Start the receiver
+  irrecv.begin(IR_RECEIVE_PIN);  // Start the receiver
 
 };
 
@@ -200,5 +200,4 @@ void loop() {
 
   // Continously send a ping and wait for acknowledgement from satellite
   sendPing();
-
-};
+  };
