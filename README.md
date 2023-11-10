@@ -16,6 +16,12 @@ communications.
 
 # Video Demonstrations
 
+<b>Project Showcase Trailer</b>
+
+Trailer video for the ground station project showcase :)
+
+[![YouTube Video](https://img.youtube.com/vi/Erh37KXE7X8?si=tCJIYUWFwVqb_qX5/0.jpg)](https://youtu.be/Erh37KXE7X8?si=tCJIYUWFwVqb_qX5)
+
 <b>First Operational Prototype</b>
 
 This is the first operational prototype of the ground station where the tower has been mounted
