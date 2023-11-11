@@ -33,11 +33,15 @@ int delayTime = 100;                                          // Time to wait be
 int messageDelay = 50;                                        // Time to wait between each character being sent
 
 int IR_RECEIVE_PIN = 3;                                       // Signal pin for IR receiver 
-IRrecv irrecv(IR_RECEIVE_PIN);
-decode_results results;
+IRrecv irrecv(IR_RECEIVE_PIN);                                // Create an IRrecv object
+decode_results decodedSignal;                                 // Stores results from IR detector
 
 const uint8_t PING_COMMAND = 0x01;                            // Command for ping - Hex value for "1"
 const uint8_t ACK_COMMAND = 0x02;                             // Command for ack - Hex value for "2"
+
+const int ledPin = 4;                                         // Use LED to signal if IR message is received
+bool lightState = LOW;                                        // Keep track of whether the LED is on
+unsigned long last = millis();                                // Remember when we last received an IR message
 
 // ************ Functions ********************
 
@@ -48,8 +52,8 @@ bool listenForAck() {
   bool ackReceived = false;
 
   while (millis() - startTime < delayTime) {     // Listen for an ACK within the specified delayTime
-    if (irrecv.decode(&results)) {               // Check if data is received
-      if (results.value == ACK_COMMAND) {        // Check if the received data is the ACK_COMMAND
+    if (irrecv.decode(&decodedSignal)) {               // Check if data is received
+      if (decodedSignal.value == ACK_COMMAND) {        // Check if the received data is the ACK_COMMAND
         Serial.println(F("ACK received!"));
         ackReceived = true;
         break;
@@ -175,7 +179,7 @@ void horizontalScan() {
 
 void setup() {
 
-  // Initialize the serial port:
+  // Initialise the serial port:
   Serial.begin(9600);
 
   // Servo motor setup
@@ -187,17 +191,57 @@ void setup() {
 	towerStepper.setAcceleration(50.0);
 	towerStepper.setSpeed(200);       
 
-  // IR Receiver setup
-  irsend.begin(IR_LED_PIN);                           // Start the transmitter
-  irrecv.begin(IR_RECEIVE_PIN);  // Start the receiver
+  pinMode(ledPin, OUTPUT);                       // Initialise LED
+  digitalWrite(ledPin, HIGH);
+  delay(1000);
+  digitalWrite(ledPin, LOW);
 
+  // IR Receiver setup
+  irsend.begin(IR_LED_PIN);                                         // Start the transmitter
+  irrecv.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK, ledPin);        // Start the receiver object - Incorrect way of starting?
+  //irrecv.enableIRIn();                                            // Start the receiver object
+
+  Serial.print(F("Ready to receive IR signals of protocols: "));
+  printActiveIRProtocols(&Serial);
 };
 
 void loop() {  
 
   // Continously scan the sky
-  // horizontalScan();          
+  //horizontalScan();          
 
   // Continously send a ping and wait for acknowledgement from satellite
-  sendPing();
+  //sendPing();
+
+   /*
+     * Check if received data is available and if yes, try to decode it.
+     * Decoded result is in the IrReceiver.decodedIRData structure.
+     *
+     * E.g. command is in IrReceiver.decodedIRData.command
+     * address is in command is in IrReceiver.decodedIRData.address
+     * and up to 32 bit raw data in IrReceiver.decodedIRData.decodedRawData
+  */
+    if (IrReceiver.decode()) {
+
+        Serial.println("Signal Received!");
+        digitalWrite(ledPin, HIGH);
+        /*
+         * Print a short summary of received data
+         */
+        IrReceiver.printIRResultShort(&Serial);
+        IrReceiver.printIRSendUsage(&Serial);
+        if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
+            Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
+            // We have an unknown protocol here, print more info
+            IrReceiver.printIRResultRawFormatted(&Serial, true);
+        }
+        Serial.println();
+
+        /*
+         * !!!Important!!! Enable receiving of the next value,
+         * since receiving has stopped after the end of the current received data packet.
+         */
+        IrReceiver.resume(); // Enable receiving of the next value
+        digitalWrite(ledPin, LOW);
+    }
   };
