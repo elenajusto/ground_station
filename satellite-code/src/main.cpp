@@ -21,6 +21,8 @@
 
 // ************ Variables ********************
 
+// Other Variables
+int satLED = 4;                                               // Digital output pin for LED
 
 // IR  Variables
 int IR_LED_PIN = 13;                                          // Signal out pin for transmitter
@@ -30,7 +32,7 @@ int messageDelay = 50;                                        // Time to wait be
 
 int IR_RECEIVE_PIN = 11;                                      // Signal pin for IR receiver 
 IRrecv irrecv(IR_RECEIVE_PIN);
-decode_results results;
+decode_results decodedSignal;
 
 const uint8_t PING_COMMAND = 0x01;                            // Command for ping - Hex value for "1"
 const uint8_t ACK_COMMAND = 0x02;                             // Command for ack - Hex value for "2"
@@ -46,8 +48,8 @@ void sendAck() {
 
 // Function to listen for a ping
 void listenForPing() {
-  if (irrecv.decode(&results)) {
-    if (results.value == PING_COMMAND) {
+  if (irrecv.decode(&decodedSignal)) {
+    if (decodedSignal.value == PING_COMMAND) {
       Serial.println(F("Ping received! Sending ACK."));
       sendAck();
     }
@@ -60,9 +62,12 @@ void listenForPing() {
 
 
 void setup() {
-
-// Initialise the serial port:
+  
+  // Initialise the serial port:
   Serial.begin(9600);
+
+  // Initialise LED
+  pinMode(satLED, OUTPUT);
 
   // IR Receiver setup
   irsend.begin(IR_LED_PIN);                                // Start the transmitter
