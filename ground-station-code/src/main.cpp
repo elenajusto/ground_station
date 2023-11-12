@@ -92,6 +92,47 @@ bool checkSignal(){
   }
 }
 
+// Function to receive ASCII characters
+String receivedString = "";  // Global variable to hold the received string
+const uint8_t MAX_STRING_LENGTH = 11;  // Length of "XYZ.XYZ.XYZ"
+const char TERMINATION_CHARACTER = '\n';  // Termination character
+
+bool checkSignalChar() {
+  if (IrReceiver.decode()) {
+    digitalWrite(ledPin, HIGH);
+
+    // Check if the received data is part of a string
+    if (IrReceiver.decodedIRData.protocol == NEC) {
+      // Assuming NEC protocol, adjust as necessary
+      uint8_t receivedValue = IrReceiver.decodedIRData.command;
+
+      // Append the received character to the string
+      receivedString += (char)receivedValue;
+
+      // Check for string completion by length or termination character
+      if (receivedString.length() >= MAX_STRING_LENGTH || receivedValue == TERMINATION_CHARACTER) {
+        // Handle the completed string
+        Serial.print(F("Received String: "));
+        Serial.println(receivedString);
+
+        // Reset the string for the next message
+        receivedString = "";
+      }
+    } else {
+      // Handle unknown protocol or noise
+      Serial.println(F("Received unknown or noisy signal"));
+    }
+
+    IrReceiver.resume();
+    digitalWrite(ledPin, LOW);
+
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
 // Simulates checkSignal() function  
 bool checkSignalDummy(){
 
@@ -222,7 +263,10 @@ void setup() {
 void loop() {  
 
   // Continously scan the sky
-  horizontalScan();     
+  //horizontalScan();     
 
   //checkSignal();     
+
+
+  checkSignalChar();
 };
