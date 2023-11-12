@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "satellite-code"
+		},
+		{
+			"name": "ground-station-code",
+			"path": "ground-station-code"
+		}
+	],
+	"settings": {}
+}
