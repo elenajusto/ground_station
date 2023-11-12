@@ -13,6 +13,8 @@
 
 
 // ************ Libraries ********************
+
+
 #include <Arduino.h>
 #include <AccelStepper.h>
 #include <Servo.h>
@@ -21,11 +23,12 @@
 
 // ************ Variables ********************
 
+
 // Other Variables
 int satLED = 4;                                               // Digital output pin for LED
 
 // IR  Variables
-int IR_LED_PIN = 12;                                          // Signal out pin for transmitter
+int IR_LED_PIN = 13;                                          // Signal out pin for transmitter
 IRsend irsend;                                                // Initialise the IRsend object
 int delayTime = 100;                                          // Time to wait between each ping
 int messageDelay = 50;                                        // Time to wait between each character being sent
@@ -42,9 +45,11 @@ const uint8_t ACK_COMMAND = 0x02;                             // Command for ack
  * For most protocols, the data is build up with a constant 8 (or 16 byte) address
  * and a variable 8 bit command.
  * There are exceptions like Sony and Denon, which have 5 bit address.
- */
+*/
 uint8_t sCommand = 0x34;
 uint8_t sRepeats = 0;
+
+
 
 // ************ Functions ********************
 
@@ -76,23 +81,27 @@ void setup() {
   // Initialise LED
   pinMode(satLED, OUTPUT);
 
+  // Flash the Red LED for 1 second to visually indicate that the program is turning on 
   digitalWrite(satLED, HIGH);
   delay(1000);
   digitalWrite(satLED, LOW);
 
-  // IR Transmitter setup
-  IrSender.begin(DISABLE_LED_FEEDBACK);               // Start with IR_SEND_PIN as send pin and disable feedback LED at default feedback LED pin
+  // IR Receiver setup
+  irrecv.begin(IR_RECEIVE_PIN, DISABLE_LED_FEEDBACK);        // Start the receiver object
 
+  // IR Transmitter setup
+  IrSender.begin(DISABLE_LED_FEEDBACK);                      // Start with IR_SEND_PIN as send pin and disable feedback LED at default feedback LED pin
   Serial.print(F("Send IR signals at pin "));
   Serial.println(IR_LED_PIN);
 }
 
 void loop() {
+
   /*
      * Print current send values
   */
   Serial.println();
-  digitalWrite(satLED, HIGH);
+  digitalWrite(satLED, HIGH);                                // LED turns on when signal is being sent
   Serial.print(F("Send now: address=0x00, command=0x"));
   Serial.print(sCommand, HEX);
   Serial.print(F(", repeats="));
@@ -108,7 +117,7 @@ void loop() {
 
   /*
     * Increment send values
-    */
+  */
   sCommand += 0x11;
   sRepeats++;
   // clip repeats at 4
@@ -117,5 +126,6 @@ void loop() {
   }
 
   delay(1000);  // delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
+
 }
 
