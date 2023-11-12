@@ -59,6 +59,7 @@ void sendAck() {
   irsend.sendNEC(ACK_COMMAND, 32);  // Sending ACK command using the NEC protocol
 }
 
+
 // Simple send function from IR library
 void simpleSend() {
   /*
@@ -92,6 +93,30 @@ void simpleSend() {
   delay(1000);  // delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
 }
 
+// Simple string sending function
+void sendString(String str) {
+  Serial.println(F("Sending String via IR:"));
+  for (int i = 0; i < str.length(); i++) {
+    // Convert each character to its ASCII value
+    uint8_t asciiValue = str.charAt(i);
+
+    // Output to Serial Monitor
+    Serial.print(F("Sending character '"));
+    Serial.print(str.charAt(i));
+    Serial.print(F("' (ASCII: 0x"));
+    Serial.print(asciiValue, HEX);
+    Serial.println(F(")"));
+
+    // Send the ASCII value via IR
+    IrSender.sendNEC(0x00, asciiValue, 0); // Adjust based on your IR library
+
+    // Delay between characters
+    delay(100); 
+  }
+  Serial.println(F("String transmission complete."));
+}
+
+
 // ************ Program ********************
 
 
@@ -116,7 +141,12 @@ void setup() {
   Serial.println(IR_LED_PIN);
 }
 
+
 void loop() {
-  simpleSend();
+  //simpleSend();
+
+  String myString = "123.123.123";
+  sendString(myString);
+  delay(5000);            // Delay before sending the string again
 }
 
