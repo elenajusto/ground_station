@@ -240,7 +240,25 @@ void horizontalScan() {
 };
 
 
+// Function for LCD to display any given string
+void displayString(String message) {
+  lcd.clear();                                                  // Clear the LCD
+  lcd.setCursor(0, 0);                                          // Set the cursor to the first line
+  int displayLength = 16;                                       // Maximum number of characters per line
 
+  // Display the message in chunks of 'displayLength' characters
+  for (int i = 0; i < message.length(); i += displayLength) {
+    String chunk = message.substring(i, min(i + displayLength, message.length()));
+    lcd.print(chunk);                                           // Print the chunk of the message
+
+    // Move to the next line or exit if the message ends
+    if (i + displayLength < message.length()) {
+      lcd.setCursor(0, 1);                                      // Move cursor to the second line
+    } else {
+      break;                                                    // Exit the loop if the end of the message is reached
+    }
+  }
+}
 
 
 void setup() {
@@ -269,6 +287,10 @@ void setup() {
 
   Serial.print(F("Ready to receive IR signals of protocols: "));
   printActiveIRProtocols(&Serial);
+
+  // Initialise LCD
+  lcd.init();                                    // Initialise the LCD
+  lcd.backlight();                              // Turn on backlight
 };
 
 void loop() {  
