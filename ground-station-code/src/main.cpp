@@ -83,6 +83,10 @@ bool checkSignal(){
   
   IrReceiver.resume();                        // Enable receiving of the next value
   digitalWrite(ledPin, LOW);                  // Ground station LED turns off after signal is received
+  
+  return true;                                // Function returns true if signal is received
+  } else {                                   
+    return false;                             // Function returns false if no signal is received
   }
 }
 
