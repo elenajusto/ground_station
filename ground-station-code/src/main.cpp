@@ -46,43 +46,6 @@ unsigned long last = millis();                                // Remember when w
 // ************ Functions ********************
 
 
-bool listenForAck() {
-  Serial.println(F("Listening for ACK..."));
-
-  unsigned long startTime = millis();
-  bool ackReceived = false;
-
-  while (millis() - startTime < delayTime) {     // Listen for an ACK within the specified delayTime
-    if (irrecv.decode(&decodedSignal)) {               // Check if data is received
-      if (decodedSignal.value == ACK_COMMAND) {        // Check if the received data is the ACK_COMMAND
-        Serial.println(F("ACK received!"));
-        ackReceived = true;
-        break;
-      }
-      irrecv.resume(); // Prepare for the next value
-    }
-  }
-
-  if (!ackReceived) {
-    Serial.println(F("No ACK received."));
-  }
-
-  return ackReceived;
-}
-
-void sendPing() {
-  Serial.println(F("Sending ping..."));          // Serial debug statement
-  irsend.sendNEC(0x00, PING_COMMAND, 32);        // Send the ping command (assuming the NEC protocol and 32 bits of data)
-
-  bool ack = listenForAck();                     // Call the function to listen for ACK
-  
-  if(ack) {
-    Serial.println("Satellite found :)");
-  } else {
-    Serial.println("Satellite not found :(");
-  }
-}
-
 // Simulates checkSignal() function  
 bool checkSignalDummy(){
 
