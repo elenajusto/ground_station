@@ -126,7 +126,7 @@ bool verticalScan() {
     servoArm.write(degree);                           // Position arm to next degree
 
     // Call IR transmitter [checkSignal]
-    bool signalFound = checkSignalDummy();            // Using dummy function!!            
+    bool signalFound = checkSignal();
 
     // Check what checkSignal returns
     if (signalFound == true) {
@@ -216,5 +216,5 @@ void setup() {
 void loop() {  
 
   // Continously scan the sky
-  //horizontalScan();          
+  horizontalScan();          
 };
