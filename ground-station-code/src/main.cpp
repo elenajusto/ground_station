@@ -48,9 +48,7 @@ unsigned long last = millis();                                // Remember when w
 
 // Check signal function
 bool checkSignal(){
-  
-  // Delay code so arm "listens" in this position before moving
-  
+
   /*
      * Check if received data is available and if yes, try to decode it.
      * Decoded result is in the IrReceiver.decodedIRData structure.
@@ -59,33 +57,33 @@ bool checkSignal(){
      * address is in command is in IrReceiver.decodedIRData.address
      * and up to 32 bit raw data in IrReceiver.decodedIRData.decodedRawData
   */
- if (IrReceiver.decode()) {
-  Serial.println("Signal Received!");
-  digitalWrite(ledPin, HIGH);
+  if (IrReceiver.decode()) {                 // Checks if signal is received by IR receiver
+    Serial.println("Signal Received!");      // Serial monitor status when signal is received
+    digitalWrite(ledPin, HIGH);              // Ground station LED lights up when signal received
   
   /*
-    * Print a short summary of received data
+      * Print a short summary of received data
   */
- IrReceiver.printIRResultShort(&Serial);
- IrReceiver.printIRSendUsage(&Serial);
- 
- if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
-  Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
+  IrReceiver.printIRResultShort(&Serial);
+  IrReceiver.printIRSendUsage(&Serial);
   
-  // We have an unknown protocol here, print more info
-  IrReceiver.printIRResultRawFormatted(&Serial, true);
+  if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
+    Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
+    
+    // We have an unknown protocol here, print more info (Raw data)
+    IrReceiver.printIRResultRawFormatted(&Serial, true);
+    }
+    
+    Serial.println();                         // Outputs above information to serial monitor
+    
+    /*
+    * !!!Important!!! Enable receiving of the next value,
+    * since receiving has stopped after the end of the current received data packet.
+    */
+  
+  IrReceiver.resume();                        // Enable receiving of the next value
+  digitalWrite(ledPin, LOW);                  // Ground station LED turns off after signal is received
   }
-  
-  Serial.println();
-  
-  /*
-  * !!!Important!!! Enable receiving of the next value,
-  * since receiving has stopped after the end of the current received data packet.
-  */
- 
- IrReceiver.resume(); // Enable receiving of the next value
- digitalWrite(ledPin, LOW);
- }
 }
 
 // Simulates checkSignal() function  
