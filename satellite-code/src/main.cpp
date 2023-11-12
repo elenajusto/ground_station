@@ -59,18 +59,6 @@ void sendAck() {
   irsend.sendNEC(ACK_COMMAND, 32);  // Sending ACK command using the NEC protocol
 }
 
-// Function to listen for a ping
-void listenForPing() {
-  if (irrecv.decode(&decodedSignal)) {
-    if (decodedSignal.value == PING_COMMAND) {
-      Serial.println(F("Ping received! Sending ACK."));
-      sendAck();
-    }
-    irrecv.resume();                 // Receive the next value
-  }
-}
-
-
 // ************ Program ********************
 
 
