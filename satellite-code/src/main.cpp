@@ -59,32 +59,8 @@ void sendAck() {
   irsend.sendNEC(ACK_COMMAND, 32);  // Sending ACK command using the NEC protocol
 }
 
-// ************ Program ********************
-
-
-void setup() {
-  // Initialise the serial port:
-  Serial.begin(9600);
-
-  // Initialise LED
-  pinMode(satLED, OUTPUT);
-
-  // Flash the Red LED for 1 second to visually indicate that the program is turning on 
-  digitalWrite(satLED, HIGH);
-  delay(1000);
-  digitalWrite(satLED, LOW);
-
-  // IR Receiver setup
-  irrecv.begin(IR_RECEIVE_PIN, DISABLE_LED_FEEDBACK);        // Start the receiver object
-
-  // IR Transmitter setup
-  IrSender.begin(DISABLE_LED_FEEDBACK);                      // Start with IR_SEND_PIN as send pin and disable feedback LED at default feedback LED pin
-  Serial.print(F("Send IR signals at pin "));
-  Serial.println(IR_LED_PIN);
-}
-
-void loop() {
-
+// Simple send function from IR library
+void simpleSend() {
   /*
      * Print current send values
   */
@@ -114,6 +90,33 @@ void loop() {
   }
 
   delay(1000);  // delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
+}
 
+// ************ Program ********************
+
+
+void setup() {
+  // Initialise the serial port:
+  Serial.begin(9600);
+
+  // Initialise LED
+  pinMode(satLED, OUTPUT);
+
+  // Flash the Red LED for 1 second to visually indicate that the program is turning on 
+  digitalWrite(satLED, HIGH);
+  delay(1000);
+  digitalWrite(satLED, LOW);
+
+  // IR Receiver setup
+  irrecv.begin(IR_RECEIVE_PIN, DISABLE_LED_FEEDBACK);        // Start the receiver object
+
+  // IR Transmitter setup
+  IrSender.begin(DISABLE_LED_FEEDBACK);                      // Start with IR_SEND_PIN as send pin and disable feedback LED at default feedback LED pin
+  Serial.print(F("Send IR signals at pin "));
+  Serial.println(IR_LED_PIN);
+}
+
+void loop() {
+  simpleSend();
 }
 

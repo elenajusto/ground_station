@@ -72,6 +72,8 @@ bool checkSignal(){
     
     // We have an unknown protocol here, print more info (Raw data)
     IrReceiver.printIRResultRawFormatted(&Serial, true);
+
+     return false;                            // Function returns false if raw signal is received
     }
     
     Serial.println();                         // Outputs above information to serial monitor
@@ -130,7 +132,7 @@ bool verticalScan() {
     servoArm.write(degree);                           // Position arm to next degree
 
     // Call IR transmitter [checkSignal]
-    bool signalFound = checkSignalDummy();
+    bool signalFound = checkSignal();
 
     // Check what checkSignal returns
     if (signalFound == true) {
