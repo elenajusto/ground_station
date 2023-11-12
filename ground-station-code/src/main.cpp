@@ -15,6 +15,8 @@
 #include <AccelStepper.h>
 #include <Servo.h>
 #include <IRremote.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 
 
 // ************ Variables ********************
@@ -42,6 +44,9 @@ const uint8_t ACK_COMMAND = 0x02;                             // Command for ack
 const int ledPin = 4;                                         // Use LED to signal if IR message is received
 bool lightState = LOW;                                        // Keep track of whether the LED is on
 unsigned long last = millis();                                // Remember when we last received an IR message
+
+// LCD Variables
+LiquidCrystal_I2C lcd(0x27, 16, 2);                           // Initialise the LCD with I2C address 0x27 for a 16x2 character display
 
 // ************ Functions ********************
 
@@ -155,6 +160,7 @@ bool checkSignalDummy(){
   };
 };
 
+
 // Vertical Scan Function
 bool verticalScan() {
 
@@ -200,6 +206,7 @@ bool verticalScan() {
 
 };
 
+
 // Horizontal Scan Function - Scans the whole sky, using vertical scan and checkSignal downstream.
 void horizontalScan() {
   
@@ -231,6 +238,10 @@ void horizontalScan() {
   Serial.println("Completed horizontal scan");                // Debug statement
 
 };
+
+
+
+
 
 void setup() {
 
