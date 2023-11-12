@@ -116,17 +116,21 @@ bool checkSignalDummy(){
 bool verticalScan() {
 
   // Position to starting degree (90)
-  servoArm.write(180);
+  //servoArm.write(180);
+  for (int degree = 0; degree != 180; degree += 5) {
+    servoArm.write(degree);
+    delay(100);
+  }
 
   // Debug - Adjust as preferred
   delay(1000);
 
-  for (int degree = 180; degree >= 0; degree -=10) {
+  for (int degree = 180; degree >= 0; degree -=5) {
     
     servoArm.write(degree);                           // Position arm to next degree
 
     // Call IR transmitter [checkSignal]
-    bool signalFound = checkSignal();
+    bool signalFound = checkSignalDummy();
 
     // Check what checkSignal returns
     if (signalFound == true) {
@@ -216,5 +220,7 @@ void setup() {
 void loop() {  
 
   // Continously scan the sky
-  horizontalScan();          
+  horizontalScan();     
+
+  //checkSignal();     
 };
