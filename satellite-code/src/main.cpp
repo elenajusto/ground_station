@@ -110,6 +110,12 @@ void sendString() {
     // Delay between characters
     delay(100); 
   }
+
+  // Send the termination character
+  Serial.println(F("Sending termination character '\\n'"));
+  IrSender.sendNEC(0x00, '\n', 0); // Send the termination character
+  delay(100); // Delay after sending the termination character
+
   Serial.println(F("String transmission complete."));
 }
 
@@ -141,9 +147,6 @@ void setup() {
 
 void loop() {
   //simpleSend();
-
-  String myString = "123.123.123";
   sendString();
-  delay(5000);            // Delay before sending the string again
 }
 

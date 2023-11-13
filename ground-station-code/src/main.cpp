@@ -34,19 +34,20 @@ IRsend irsend;                                                // Initialise the 
 int delayTime = 100;                                          // Time to wait between each ping
 int messageDelay = 50;                                        // Time to wait between each character being sent
 
-int IR_RECEIVE_PIN = 3;                                       // Signal pin for IR receiver 
+int IR_RECEIVE_PIN = 4;                                       // Signal pin for IR receiver 
 IRrecv irrecv(IR_RECEIVE_PIN);                                // Create an IRrecv object
 decode_results decodedSignal;                                 // Stores results from IR detector
 
 const uint8_t PING_COMMAND = 0x01;                            // Command for ping - Hex value for "1"
 const uint8_t ACK_COMMAND = 0x02;                             // Command for ack - Hex value for "2"
 
-const int ledPin = 4;                                         // Use LED to signal if IR message is received
+const int ledPin = 3;                                         // Use LED to signal if IR message is received
 bool lightState = LOW;                                        // Keep track of whether the LED is on
 unsigned long last = millis();                                // Remember when we last received an IR message
 
 // LCD Variables
 LiquidCrystal_I2C lcd(0x27, 16, 2);                           // Initialise the LCD with I2C address 0x27 for a 16x2 character display
+
 
 // ************ Functions ********************
 
@@ -73,94 +74,6 @@ void displayString(String message) {
 }
 
 
-// Check signal function
-bool checkSignal(){
-
-  /*
-     * Check if received data is available and if yes, try to decode it.
-     * Decoded result is in the IrReceiver.decodedIRData structure.
-     *
-     * E.g. command is in IrReceiver.decodedIRData.command
-     * address is in command is in IrReceiver.decodedIRData.address
-     * and up to 32 bit raw data in IrReceiver.decodedIRData.decodedRawData
-  */
-  if (IrReceiver.decode()) {                 // Checks if signal is received by IR receiver
-    Serial.println("Signal Received!");      // Serial monitor status when signal is received
-    digitalWrite(ledPin, HIGH);              // Ground station LED lights up when signal received
-  
-  /*
-      * Print a short summary of received data
-  */
-  IrReceiver.printIRResultShort(&Serial);
-  IrReceiver.printIRSendUsage(&Serial);
-  
-  if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
-    Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
-    displayString(F("Received noise"));
-    
-    // We have an unknown protocol here, print more info (Raw data)
-    IrReceiver.printIRResultRawFormatted(&Serial, true);
-
-     return false;                            // Function returns false if raw signal is received
-    }
-    
-    Serial.println();                         // Outputs above information to serial monitor
-    
-    /*
-    * !!!Important!!! Enable receiving of the next value,
-    * since receiving has stopped after the end of the current received data packet.
-    */
-  
-  IrReceiver.resume();                        // Enable receiving of the next value
-  digitalWrite(ledPin, LOW);                  // Ground station LED turns off after signal is received
-  
-  return true;                                // Function returns true if signal is received
-  } else {                                   
-    return false;                             // Function returns false if no signal is received
-  }
-}
-
-// Function to receive ASCII characters
-String receivedString = "";  // Global variable to hold the received string
-const uint8_t MAX_STRING_LENGTH = 11;  // Length of "XYZ.XYZ.XYZ"
-const char TERMINATION_CHARACTER = '\n';  // Termination character
-
-bool checkSignalChar() {
-  if (IrReceiver.decode()) {
-    digitalWrite(ledPin, HIGH);
-
-    // Check if the received data is part of a string
-    if (IrReceiver.decodedIRData.protocol == NEC) {
-      // Assuming NEC protocol, adjust as necessary
-      uint8_t receivedValue = IrReceiver.decodedIRData.command;
-
-      // Append the received character to the string
-      receivedString += (char)receivedValue;
-
-      // Check for string completion by length or termination character
-      if (receivedString.length() >= MAX_STRING_LENGTH || receivedValue == TERMINATION_CHARACTER) {
-        // Handle the completed string
-        Serial.print(F("Received String: "));
-        Serial.println(receivedString);
-
-        // Reset the string for the next message
-        receivedString = "";
-      }
-    } else {
-      // Handle unknown protocol or noise
-      Serial.println(F("Received unknown or noisy signal"));
-    }
-
-    IrReceiver.resume();
-    digitalWrite(ledPin, LOW);
-
-    return true;
-  } else {
-    return false;
-  }
-}
-
-
 // Simulates checkSignal() function  
 bool checkSignalDummy(){
 
@@ -184,50 +97,124 @@ bool checkSignalDummy(){
 };
 
 
+// Check signal function
+bool checkSignal() {
+  // Check if received data is available and if yes, try to decode it.
+  if (IrReceiver.decode()) {                 
+    Serial.println("Signal Received!");      
+    digitalWrite(ledPin, HIGH);              
+
+    // Print a short summary of received data
+    IrReceiver.printIRResultShort(&Serial); // Display the decoded result
+
+    // Check if the received protocol is unknown
+    if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
+      Serial.println(F("Received noise or an unknown protocol"));
+      displayString(F("Received noise"));
+
+      // Print more info if the protocol is unknown (Raw data)
+      IrReceiver.printIRResultRawFormatted(&Serial, true);
+      IrReceiver.resume(); // Important to enable receiving the next signal
+      digitalWrite(ledPin, LOW);
+
+      return false; // Return false for unknown protocol
+    }
+    
+    // Handle known protocol (Add your handling code here)
+    // E.g., process the received command or address
+
+    IrReceiver.resume(); // Enable receiving of the next value
+    digitalWrite(ledPin, LOW);
+
+    return true; // Return true for successful reception of known protocol
+  } else {                                   
+    return false; // Return false if no signal is received
+  }
+}
+
+
+// Function to receive ASCII characters
+String receivedString = "";  // Global variable to hold the received string
+const uint8_t MAX_STRING_LENGTH = 11;  // Length of "EEEEEEEEEEE"
+const char TERMINATION_CHARACTER = '\n';  // Termination character
+const int stabilizationDelay = 100; // Delay in milliseconds for stabilization at the beginning of signal check
+
+bool checkSignalChar() {
+  delay(stabilizationDelay); // Wait for stabilization before starting signal check
+
+  if (IrReceiver.decode()) {
+    digitalWrite(ledPin, HIGH);
+
+    if (IrReceiver.decodedIRData.protocol == NEC) {
+      uint8_t receivedValue = IrReceiver.decodedIRData.command;
+
+      // Append the received character to the string
+      receivedString += (char)receivedValue;
+
+      // Check for string completion by length or termination character
+      if (receivedString.length() >= MAX_STRING_LENGTH || receivedValue == TERMINATION_CHARACTER) {
+        Serial.print(F("Received String: "));
+        Serial.println(receivedString);
+
+        // Check if the received string matches "EEEEEEEEEEE"
+        if (receivedString == "EEEEEEEEEEE") {
+          displayString(receivedString); // Display the string if it matches
+          receivedString = ""; // Reset the string for the next message
+          digitalWrite(ledPin, LOW);
+          return true; // Return true if the string matches "EEEEEEEEEEE"
+        }
+
+        // Reset the string if it doesn't match
+        receivedString = ""; 
+      }
+    } else {
+      Serial.println("Noise");
+      return false; // Return false if the string doesn't match or for unknown signal
+    }
+
+    IrReceiver.resume();
+    digitalWrite(ledPin, LOW);
+    return false; // Return false if the string doesn't match or for unknown signal
+  } else {
+    Serial.println("No signal");
+    return false; // Return false if no signal is received
+  }
+}
+
+
 // Vertical Scan Function
 bool verticalScan() {
+  const int stabilizationDelay = 100; // Delay in milliseconds to allow for stabilization
 
-  // Position to starting degree (90)
-  //servoArm.write(180);
-  for (int degree = 0; degree != 180; degree += 5) {
+  // Scan upwards from 0 to 180 degrees
+  for (int degree = 0; degree <= 90; degree += 5) {
     servoArm.write(degree);
-    delay(100);
+    delay(stabilizationDelay); // Wait for stabilization after moving
+
+    // Check for signal at this vertical degree
+    if (checkSignalChar()) {
+      Serial.println("Signal found during initial vertical scan");
+      delay(3000); // Hold position for a while (for debugging)
+      return true; // Signal found
+    }
   }
 
-  // Debug - Adjust as preferred
-  delay(1000);
+  // Scan downwards from 180 to 0 degrees
+  for (int degree = 90; degree >= 0; degree -= 5) {
+    servoArm.write(degree); // Position arm to the next degree
+    delay(stabilizationDelay); // Wait for stabilization after moving
 
-  for (int degree = 180; degree >= 0; degree -=5) {
-    
-    servoArm.write(degree);                           // Position arm to next degree
+    // Check for signal at this vertical degree
+    if (checkSignalChar()) {
+      Serial.println("Signal found during final vertical scan");
+      delay(3000); // Hold position for a while (for debugging)
+      return true; // Signal found
+    }
+  }
 
-    // Call IR transmitter [checkSignal]
-    bool signalFound = checkSignal();
-
-    // Check what checkSignal returns
-    if (signalFound == true) {
-
-      // If checkSignal found satellite - Return True
-      Serial.println("verticalScan == true");           // DEBUG
-      delay(3000);                                      // DEBUG - Holds arm position for this amount of time
-      return true;
-
-    }  
-    
-    // checkSignal did not find satellite 
-    // Continue to next degree   
-
-  };
-
-  Serial.println("verticalScan == false"); // DEBUG
-
-  // Debug - Adjust as preferred
-  delay(1000); 
-
-  // Return to horizontalScan
-  return false;
-
-};
+  Serial.println("No signal found in vertical scan");
+  return false; // No signal found in the entire vertical scan
+}
 
 
 // Horizontal Scan Function - Scans the whole sky, using vertical scan and checkSignal downstream.
@@ -263,6 +250,9 @@ void horizontalScan() {
 };
 
 
+// ************ Main Program ********************
+
+
 void setup() {
 
   // Initialise LCD
@@ -280,8 +270,8 @@ void setup() {
   
 	// Stepper motor setup
   displayString("Starting Stepper");
-	towerStepper.setMaxSpeed(1000.0);
-	towerStepper.setAcceleration(100.0);
+	towerStepper.setMaxSpeed(200.0);
+	towerStepper.setAcceleration(80.0);
 	towerStepper.setSpeed(200);       
 
   displayString("Starting LED");
@@ -309,9 +299,6 @@ void loop() {
   lcd.clear(); 
 
   // Continously scan the sky
-  //horizontalScan();     
-
-  //checkSignal();     
-
-  checkSignalChar();
+  horizontalScan();     
+  
 };
