@@ -93,21 +93,18 @@ void simpleSend() {
   delay(1000);  // delay must be greater than 5 ms (RECORD_GAP_MICROS), otherwise the receiver sees it as one long signal
 }
 
-// Simple string sending function
-void sendString(String str) {
-  Serial.println(F("Sending String via IR:"));
-  for (int i = 0; i < str.length(); i++) {
-    // Convert each character to its ASCII value
-    uint8_t asciiValue = str.charAt(i);
+// Modified sendString function to send 'E' repeatedly
+void sendString() {
+  char str = 'E'; // Character to send
+  uint8_t asciiValue = str; // ASCII value for 'E'
 
+  for (int i = 0; i < 10; i++) { // Sending 10 'E's
     // Output to Serial Monitor
-    Serial.print(F("Sending character '"));
-    Serial.print(str.charAt(i));
-    Serial.print(F("' (ASCII: 0x"));
+    Serial.print(F("Sending character 'E' (ASCII: 0x"));
     Serial.print(asciiValue, HEX);
     Serial.println(F(")"));
 
-    // Send the ASCII value via IR
+    // Send the ASCII value (for 'E') via IR
     IrSender.sendNEC(0x00, asciiValue, 0); // Adjust based on your IR library
 
     // Delay between characters
@@ -146,7 +143,7 @@ void loop() {
   //simpleSend();
 
   String myString = "123.123.123";
-  sendString(myString);
+  sendString();
   delay(5000);            // Delay before sending the string again
 }
 

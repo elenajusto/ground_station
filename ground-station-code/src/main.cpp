@@ -313,5 +313,5 @@ void loop() {
 
   //checkSignal();     
 
-  //checkSignalChar();
+  checkSignalChar();
 };
