@@ -51,6 +51,28 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);                           // Initialise the 
 // ************ Functions ********************
 
 
+// Function for LCD to display any given string
+void displayString(String message) {
+  lcd.clear();                                                  // Clear the LCD
+  lcd.setCursor(0, 0);                                          // Set the cursor to the first line
+  int displayLength = 16;                                       // Maximum number of characters per line
+
+  // Display the message in chunks of 'displayLength' characters
+  for (int i = 0; i < message.length(); i += displayLength) {
+    String chunk = message.substring(i, min(i + displayLength, message.length()));
+    lcd.print(chunk);                                           // Print the chunk of the message
+
+    // Move to the next line or exit if the message ends
+    if (i + displayLength < message.length()) {
+      lcd.setCursor(0, 1);                                      // Move cursor to the second line
+    } else {
+      break;                                                    // Exit the loop if the end of the message is reached
+    }
+  }
+  delay(500);
+}
+
+
 // Check signal function
 bool checkSignal(){
 
@@ -74,6 +96,7 @@ bool checkSignal(){
   
   if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
     Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
+    displayString(F("Received noise"));
     
     // We have an unknown protocol here, print more info (Raw data)
     IrReceiver.printIRResultRawFormatted(&Serial, true);
@@ -212,9 +235,9 @@ void horizontalScan() {
   
   Serial.println("Starting horizontal scan");                 // Debug statement
 
-  int stepsToCover = 1019;                                    // Number of degrees to cover in steps: 360 = 2038, 180 = 1019
+  int stepsToCover = 1000;                                    // Number of degrees to cover in steps: 360 = 2038, 180 = 1019
 
-  for (int step = 0; step <= stepsToCover; step += 100){      // Move in steps of 100
+  for (int step = 0; step <= stepsToCover; step += 100){      // Move in steps of 300
 
     // Position to next step of stepsToCover
     towerStepper.moveTo(step);                                
@@ -240,47 +263,35 @@ void horizontalScan() {
 };
 
 
-// Function for LCD to display any given string
-void displayString(String message) {
-  lcd.clear();                                                  // Clear the LCD
-  lcd.setCursor(0, 0);                                          // Set the cursor to the first line
-  int displayLength = 16;                                       // Maximum number of characters per line
-
-  // Display the message in chunks of 'displayLength' characters
-  for (int i = 0; i < message.length(); i += displayLength) {
-    String chunk = message.substring(i, min(i + displayLength, message.length()));
-    lcd.print(chunk);                                           // Print the chunk of the message
-
-    // Move to the next line or exit if the message ends
-    if (i + displayLength < message.length()) {
-      lcd.setCursor(0, 1);                                      // Move cursor to the second line
-    } else {
-      break;                                                    // Exit the loop if the end of the message is reached
-    }
-  }
-}
-
-
 void setup() {
 
+  // Initialise LCD
+  lcd.init();                                    // Initialise the LCD
+  lcd.backlight();                               // Turn on backlight
+  
   // Initialise the serial port:
+  displayString("Starting Serial");
   Serial.begin(9600);
 
   // Servo motor setup
+  displayString("Starting Servo");
   servoArm.attach(6);                             // Set pin 6 for servo control
   servoArm.write(0);                              // Start arm at a horizontal right angle
   
 	// Stepper motor setup
+  displayString("Starting Stepper");
 	towerStepper.setMaxSpeed(1000.0);
-	towerStepper.setAcceleration(50.0);
+	towerStepper.setAcceleration(100.0);
 	towerStepper.setSpeed(200);       
 
+  displayString("Starting LED");
   pinMode(ledPin, OUTPUT);                       // Initialise LED
   digitalWrite(ledPin, HIGH);
   delay(1000);
   digitalWrite(ledPin, LOW);
 
   // IR Receiver setup
+  displayString("Starting IR");
   irsend.begin(IR_LED_PIN);                                         // Start the transmitter
   irrecv.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK, ledPin);        // Start the receiver object - Incorrect way of starting?
   //irrecv.enableIRIn();                                            // Start the receiver object
@@ -288,18 +299,19 @@ void setup() {
   Serial.print(F("Ready to receive IR signals of protocols: "));
   printActiveIRProtocols(&Serial);
 
-  // Initialise LCD
-  lcd.init();                                    // Initialise the LCD
-  lcd.backlight();                              // Turn on backlight
+  displayString("Ready to go!");
+
 };
 
 void loop() {  
 
+  // Clear the LCD every loop
+  lcd.clear(); 
+
   // Continously scan the sky
-  //horizontalScan();     
+  horizontalScan();     
 
   //checkSignal();     
 
-
-  checkSignalChar();
+  //checkSignalChar();
 };
