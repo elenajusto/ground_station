@@ -293,8 +293,8 @@ void setup() {
   // IR Receiver setup
   displayString("Starting IR");
   irsend.begin(IR_LED_PIN);                                         // Start the transmitter
-  irrecv.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK, ledPin);        // Start the receiver object - Incorrect way of starting?
-  //irrecv.enableIRIn();                                            // Start the receiver object
+  //irrecv.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK, ledPin);        // Start the receiver object - Incorrect way of starting?
+  irrecv.enableIRIn();                                            // Start the receiver object
 
   Serial.print(F("Ready to receive IR signals of protocols: "));
   printActiveIRProtocols(&Serial);
@@ -309,7 +309,7 @@ void loop() {
   lcd.clear(); 
 
   // Continously scan the sky
-  horizontalScan();     
+  //horizontalScan();     
 
   //checkSignal();     
 
