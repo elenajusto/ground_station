@@ -48,6 +48,10 @@ unsigned long last = millis();                                // Remember when w
 // LCD Variables
 LiquidCrystal_I2C lcd(0x27, 16, 2);                           // Initialise the LCD with I2C address 0x27 for a 16x2 character display
 
+// Tracking
+bool connectionState = false;  // Tracks the connection state
+int currentSearchRadius = 2;  // Current search radius in degrees
+
 
 // ************ Functions ********************
 
@@ -70,7 +74,7 @@ void displayString(String message) {
       break;                                                    // Exit the loop if the end of the message is reached
     }
   }
-  delay(500);
+  delay(100);
 }
 
 
@@ -97,42 +101,6 @@ bool checkSignalDummy(){
 };
 
 
-// Check signal function
-bool checkSignal() {
-  // Check if received data is available and if yes, try to decode it.
-  if (IrReceiver.decode()) {                 
-    Serial.println("Signal Received!");      
-    digitalWrite(ledPin, HIGH);              
-
-    // Print a short summary of received data
-    IrReceiver.printIRResultShort(&Serial); // Display the decoded result
-
-    // Check if the received protocol is unknown
-    if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
-      Serial.println(F("Received noise or an unknown protocol"));
-      displayString(F("Received noise"));
-
-      // Print more info if the protocol is unknown (Raw data)
-      IrReceiver.printIRResultRawFormatted(&Serial, true);
-      IrReceiver.resume(); // Important to enable receiving the next signal
-      digitalWrite(ledPin, LOW);
-
-      return false; // Return false for unknown protocol
-    }
-    
-    // Handle known protocol (Add your handling code here)
-    // E.g., process the received command or address
-
-    IrReceiver.resume(); // Enable receiving of the next value
-    digitalWrite(ledPin, LOW);
-
-    return true; // Return true for successful reception of known protocol
-  } else {                                   
-    return false; // Return false if no signal is received
-  }
-}
-
-
 // Function to receive ASCII characters
 String receivedString = "";  // Global variable to hold the received string
 const uint8_t MAX_STRING_LENGTH = 11;  // Length of "EEEEEEEEEEE"
@@ -157,33 +125,40 @@ bool checkSignalChar() {
         Serial.println(receivedString);
 
         // Check if the received string matches "EEEEEEEEEEE"
-        if (receivedString == "EEEEEEEEEEE") {
-          displayString(receivedString); // Display the string if it matches
-          receivedString = ""; // Reset the string for the next message
-          digitalWrite(ledPin, LOW);
-          return true; // Return true if the string matches "EEEEEEEEEEE"
-        }
+        bool isMatch = (receivedString == "EEEEEEEEEEE");
+        receivedString = ""; // Reset the string for the next message
+        digitalWrite(ledPin, LOW);
 
-        // Reset the string if it doesn't match
-        receivedString = ""; 
+        if (isMatch) {
+          displayString("Signal Found!");
+          delay(5000);
+          displayString("EEEEEEEEEEE"); // Display the string if it matches
+          return true; // Return true if the string matches "EEEEEEEEEEE"
+        } else {
+          return false; // Return false if the string doesn't match
+        }
       }
     } else {
       Serial.println("Noise");
-      return false; // Return false if the string doesn't match or for unknown signal
+      displayString("Noise");
+      receivedString = ""; // Reset the string if noise is detected
     }
 
     IrReceiver.resume();
     digitalWrite(ledPin, LOW);
-    return false; // Return false if the string doesn't match or for unknown signal
   } else {
-    Serial.println("No signal");
-    return false; // Return false if no signal is received
+    Serial.println("No signal, Searching...");
+    displayString("Searching...");
   }
+
+  return false; // Return false if no signal is received or if the signal is not NEC
 }
 
 
 // Vertical Scan Function
 bool verticalScan() {
+  displayString("Vertical Scan Start");
+  delay(1000);
   const int stabilizationDelay = 100; // Delay in milliseconds to allow for stabilization
 
   // Scan upwards from 0 to 180 degrees
@@ -195,6 +170,7 @@ bool verticalScan() {
     if (checkSignalChar()) {
       Serial.println("Signal found during initial vertical scan");
       delay(3000); // Hold position for a while (for debugging)
+      displayString("Vertical Scan Complete");
       return true; // Signal found
     }
   }
@@ -208,18 +184,21 @@ bool verticalScan() {
     if (checkSignalChar()) {
       Serial.println("Signal found during final vertical scan");
       delay(3000); // Hold position for a while (for debugging)
+      displayString("Vertical Scan Complete");
       return true; // Signal found
     }
   }
 
   Serial.println("No signal found in vertical scan");
+  displayString("Vertical Scan Complete");
   return false; // No signal found in the entire vertical scan
 }
 
 
 // Horizontal Scan Function - Scans the whole sky, using vertical scan and checkSignal downstream.
 void horizontalScan() {
-  
+  displayString("Horizontal Scan Start");
+  delay(1000);
   Serial.println("Starting horizontal scan");                 // Debug statement
 
   int stepsToCover = 1000;                                    // Number of degrees to cover in steps: 360 = 2038, 180 = 1019
@@ -246,7 +225,7 @@ void horizontalScan() {
   };
 
   Serial.println("Completed horizontal scan");                // Debug statement
-
+  displayString("Horizontal Scan Complete");
 };
 
 
@@ -300,5 +279,5 @@ void loop() {
 
   // Continously scan the sky
   horizontalScan();     
-  
+
 };
